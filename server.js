@@ -9,18 +9,19 @@ server.listen(8080, '127.0.0.1');
 var wss = new WSS({ port: 8081 });
 wss.on('connection', function(socket) {
   console.log('Opened Connection 🎉');
-
-  var json = JSON.stringify({ message: 'Pepsi Bottles 24P' });
+    socket.binaryType = ArrayBuffer;
+  var json = JSON.stringify({ message: 'ready' });
   socket.send(json);
   console.log('Sent: ' + json);
 
-  socket.on('message', function(_message) {
-    console.log('Received: 1' + _message);
+  socket.on('message', function(_message, isBinary) {
+    console.log('Received: 1' +  _message, isBinary);
 
-    wss.clients.forEach(function each(client) {
-      var json = _message;
-      client.send(json);
-      console.log('Sent: ' + json);
+    wss.clients.forEach(async function each(client) {
+        var json = _message;
+        client.send(json);
+        //var text = await new Response(_message).text();
+        console.log('Sent from server : ' + JSON.stringify(json));
     });
   });
 
